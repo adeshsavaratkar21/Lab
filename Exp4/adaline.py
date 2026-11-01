@@ -6,11 +6,20 @@ Description: Implementation of Adaline (Adaptive Linear Neuron) Network using De
 """
 
 import sys
+
+# Configure stdout for UTF-8 on Windows with safe fallback
 if hasattr(sys.stdout, 'reconfigure'):
     try:
-        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     except Exception:
         pass
+
+# Determine safe Delta symbol (uses Greek Delta if terminal supports it, else ASCII 'd')
+try:
+    "Δ".encode(sys.stdout.encoding or 'ascii')
+    DELTA = "Δ"
+except Exception:
+    DELTA = "d"
 
 try:
     import numpy as np
@@ -62,7 +71,7 @@ def main():
     num_epochs = 2  # Set number of training epochs
 
     # Table header formatted according to lab manual specifications
-    header = f"{'EPOCH':<7} | {'x1':<4} {'x2':<4} {'t':<4} | {'yin':<9} {'t - yin':<9} | {'Δw1':<8} {'Δw2':<8} {'Δb':<8} | {'w1':<8} {'w2':<8} {'b':<8} | {'(t - yin)^2':<10}"
+    header = f"{'EPOCH':<7} | {'x1':<4} {'x2':<4} {'t':<4} | {'yin':<9} {'t - yin':<9} | {DELTA + 'w1':<8} {DELTA + 'w2':<8} {DELTA + 'b':<8} | {'w1':<8} {'w2':<8} {'b':<8} | {'(t - yin)^2':<10}"
     print(header)
     print("-" * 115)
 

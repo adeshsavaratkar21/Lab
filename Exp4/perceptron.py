@@ -6,11 +6,20 @@ Description: Implementation of Single Layer Perceptron Learning Algorithm for Bi
 """
 
 import sys
+
+# Configure stdout for UTF-8 on Windows with safe fallback
 if hasattr(sys.stdout, 'reconfigure'):
     try:
-        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     except Exception:
         pass
+
+# Determine safe Delta symbol (uses Greek Delta if terminal supports it, else ASCII 'd')
+try:
+    "Δ".encode(sys.stdout.encoding or 'ascii')
+    DELTA = "Δ"
+except Exception:
+    DELTA = "d"
 
 try:
     import numpy as np
@@ -66,7 +75,7 @@ def main():
     print("EXP: TO DESIGN SINGLE LAYER PERCEPTRON USING PYTHON")
     print("OUTPUT: AND GATE USING PERCEPTRON LEARNING RULE")
     print("=" * 80)
-    header = f"{'EPOCH':<7} | {'x1':<3} {'x2':<3} {'t':<3} | {'yin':<5} {'y':<3} | {'Δw1':<4} {'Δw2':<4} {'Δb':<4} | {'w1':<4} {'w2':<4} {'b':<4}"
+    header = f"{'EPOCH':<7} | {'x1':<3} {'x2':<3} {'t':<3} | {'yin':<5} {'y':<3} | {DELTA + 'w1':<4} {DELTA + 'w2':<4} {DELTA + 'b':<4} | {'w1':<4} {'w2':<4} {'b':<4}"
     print(header)
     print("-" * 80)
 
