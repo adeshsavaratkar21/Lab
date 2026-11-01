@@ -1,116 +1,72 @@
 """
 Experiment 6: Competitive Learning Networks
 File: som.py
-Description: Kohonen Self-Organizing Map (SOM) implementation using pure Python.
-             Demonstrates unsupervised clustering, Best Matching Unit (BMU) competition,
-             topological neighborhood updates, and learning rate decay.
+Description: Kohonen Self-Organizing Feature Map (KSOM) simulation.
+             Matches Lab Manual format and exact notebook numerical outputs.
 """
 
-import math
-import random
-from typing import List, Tuple
+import sys
+if hasattr(sys.stdout, 'reconfigure'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+
+import numpy as np
 
 
-class KohonenSOM:
-    def __init__(self, input_dim: int, num_clusters: int, lr: float = 0.5, seed: int = 42):
-        self.input_dim = input_dim
-        self.num_clusters = num_clusters
-        self.initial_lr = lr
-        self.lr = lr
-        random.seed(seed)
+def main():
+    # 1: Kohonen Self-Organizing Feature Map (KSOM)
+    # Initial Weight Matrix: rows = features (x1, x2), cols = cluster units (Y1 to Y5)
+    W = np.array([
+        [0.3, 0.2, 0.1, 0.8, 0.4],
+        [0.5, 0.6, 0.7, 0.9, 0.2]
+    ], dtype=float)
 
-        # Initialize cluster weights randomly or with small values
-        self.weights = [[random.uniform(0.1, 0.9) for _ in range(input_dim)] for _ in range(num_clusters)]
-
-    def euclidean_distance_sq(self, x: List[float], w: List[float]) -> float:
-        """Computes squared Euclidean distance between input x and weight w."""
-        return sum((xi - wi) ** 2 for xi, wi in zip(x, w))
-
-    def find_bmu(self, x: List[float]) -> Tuple[int, float]:
-        """Finds Best Matching Unit (BMU) with minimum Euclidean distance."""
-        best_cluster = 0
-        min_dist = float('inf')
-
-        for j in range(self.num_clusters):
-            dist = self.euclidean_distance_sq(x, self.weights[j])
-            if dist < min_dist:
-                min_dist = dist
-                best_cluster = j
-
-        return best_cluster, math.sqrt(min_dist)
-
-    def train(self, data: List[List[float]], epochs: int = 100, radius: float = 1.0):
-        """
-        Trains Kohonen SOM over specified epochs.
-        Updates winner (and immediate topological neighbors).
-        """
-        print(f"\n--- Training Kohonen SOM ({self.num_clusters} Clusters, {epochs} Epochs) ---")
-        print("Initial Cluster Weights:")
-        for j, w in enumerate(self.weights):
-            print(f"  Cluster {j}: {[round(val, 4) for val in w]}")
-        print("-" * 65)
-
-        for epoch in range(1, epochs + 1):
-            # Linearly decay learning rate
-            self.lr = self.initial_lr * (1.0 - (epoch - 1) / epochs)
-
-            for x_vec in data:
-                bmu, _ = self.find_bmu(x_vec)
-
-                # Update BMU and topological neighbors
-                for j in range(self.num_clusters):
-                    dist_to_bmu = abs(j - bmu)  # 1D linear topology
-                    if dist_to_bmu <= radius:
-                        # Influence factor h(j, bmu)
-                        influence = math.exp(-(dist_to_bmu ** 2) / (2 * (max(0.1, radius) ** 2)))
-                        for i in range(self.input_dim):
-                            self.weights[j][i] += self.lr * influence * (x_vec[i] - self.weights[j][i])
-
-            # Decay radius gradually
-            radius = max(0.0, radius * 0.98)
-
-        print("Final Cluster Weights after Convergence:")
-        for j, w in enumerate(self.weights):
-            print(f"  Cluster {j}: {[round(val, 4) for val in w]}")
-        print("-" * 65)
-
-    def predict_clusters(self, data: List[List[float]]) -> List[int]:
-        """Assigns each sample to its nearest cluster."""
-        assignments = []
-        for x_vec in data:
-            bmu, _ = self.find_bmu(x_vec)
-            assignments.append(bmu)
-        return assignments
-
-
-def demo_som():
     print("=" * 65)
-    print("         KOHONEN SELF-ORGANIZING MAP (SOM) CLUSTERING         ")
+    print("KOHONEN SELF-ORGANIZING FEATURE MAP (KSOM) SIMULATION")
     print("=" * 65)
+    print("Initial Weight Matrix W (2 x 5):\n", W)
 
-    # Standard textbook 4-vector dataset (4-dimensional feature vectors)
-    # Vectors represent 2 distinct conceptual categories
-    dataset = [
-        [1.0, 1.0, 0.0, 0.0],  # Pattern A1
-        [0.0, 0.0, 0.0, 1.0],  # Pattern B1
-        [1.0, 0.0, 0.0, 0.0],  # Pattern A2
-        [0.0, 0.0, 1.0, 1.0],  # Pattern B2
-    ]
-    labels = ["Pattern A1", "Pattern B1", "Pattern A2", "Pattern B2"]
+    # Part (a): take input (0.2, 0.4) with alpha = 0.2
+    x_a = np.array([0.2, 0.4])
+    alpha_a = 0.2
+    print("\n Input Vector = (0.2, 0.4), alpha = 0.2 ")
 
-    som = KohonenSOM(input_dim=4, num_clusters=2, lr=0.6, seed=10)
-    som.train(dataset, epochs=200, radius=1.0)
+    # Compute squared Euclidean distance D(j) for each cluster unit
+    D_a = np.sum((W - x_a[:, np.newaxis]) ** 2, axis=0)
+    for j in range(len(D_a)):
+        print(f"D({j + 1}) = ({W[0, j]:.1f} - {x_a[0]:.1f})^2 + ({W[1, j]:.1f} - {x_a[1]:.1f})^2 = {D_a[j]:.4f}")
 
-    print("\nCluster Assignment Results:")
-    print(f"{'Sample Label':<14} | {'Input Vector':<22} | {'Assigned Cluster':<18}")
-    print("-" * 65)
-    assignments = som.predict_clusters(dataset)
-    for label, x_vec, cluster in zip(labels, dataset, assignments):
-        vec_str = str(x_vec)
-        print(f"{label:<14} | {vec_str:<22} | Cluster {cluster}")
-    print("=" * 65)
+    # Identify winning cluster unit J
+    winner_a = np.argmin(D_a)  # 0-indexed: 0 corresponds to Y1
+    print(f"\nWinning Unit: Y{winner_a + 1} with minimum D = {D_a[winner_a]:.4f}")
+
+    # Update weights of the winner
+    W[:, winner_a] = W[:, winner_a] + alpha_a * (x_a - W[:, winner_a])
+    print("Updated Weight Matrix after Part (a):\n", np.round(W, 4))
+
+    # Part (b): take input (0.6, 0.6) with alpha = 0.1
+    W = np.array([
+        [0.3, 0.2, 0.1, 0.8, 0.4],
+        [0.5, 0.6, 0.7, 0.9, 0.2]
+    ], dtype=float)
+
+    x_b = np.array([0.6, 0.6])
+    alpha_b = 0.1
+    print("\n Input Vector = (0.6, 0.6), alpha = 0.1 ")
+
+    D_b = np.sum((W - x_b[:, np.newaxis]) ** 2, axis=0)
+    for j in range(len(D_b)):
+        print(f"D({j + 1}) = ({W[0, j]:.1f} - {x_b[0]:.1f})^2 + ({W[1, j]:.1f} - {x_b[1]:.1f})^2 = {D_b[j]:.4f}")
+
+    winner_b = np.argmin(D_b)
+    print(f"\nWinning Unit: Y{winner_b + 1} with minimum D = {D_b[winner_b]:.4f}")
+
+    # Update weights of the winner
+    W[:, winner_b] = W[:, winner_b] + alpha_b * (x_b - W[:, winner_b])
+    print("Updated Weight Matrix after Part (b):\n", np.round(W, 4))
 
 
 if __name__ == "__main__":
-    demo_som()
-
+    main()

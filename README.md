@@ -91,11 +91,11 @@ Lab/
 ---
 
 ### Exp6: Competitive Learning (SOM & LVQ) (`Python`)
-* **`Exp6/som.py`**: Kohonen Self-Organizing Map (SOM) for unsupervised clustering with BMU selection and decaying neighbourhood.
+* **`Exp6/som.py`**: Kohonen Self-Organizing Feature Map (KSOM) simulation computing squared Euclidean distance and updating winner cluster units for input patterns.
   ```bash
   python Exp6/som.py
   ```
-* **`Exp6/lvq.py`**: Learning Vector Quantization (LVQ) for supervised competitive classification with prototype weight updates.
+* **`Exp6/lvq.py`**: Learning Vector Quantization (LVQ) simulation updating class reference prototypes with reward/penalty rules.
   ```bash
   python Exp6/lvq.py
   ```

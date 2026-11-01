@@ -1,10 +1,3 @@
-"""
-Experiment 5: Backpropagation Neural Network (BPN)
-File: backprop.py
-Description: Implementation of Backpropagation Algorithm for a 2-Hidden-Unit, 1-Output-Unit BPN.
-             Step-by-step trace of forward pass, error gradients, backward pass, and weight updates.
-             Matches Lab Manual format and exact notebook numerical outputs.
-"""
 
 import sys
 import math
