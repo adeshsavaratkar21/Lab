@@ -1,22 +1,9 @@
-"""
-Experiment 3: McCulloch-Pitts (MP) Neuron & Binary Adders
-File: mp_adders.py
-Description: Implementation of McCulloch-Pitts (MP) Neuron model to simulate:
-             1. Basic logic gates (AND, OR, NOT, AND-NOT)
-             2. Non-linear XOR gate using multi-layer MP neurons
-             3. Half Adder (Sum = A XOR B, Carry = A AND B)
-             4. Full Adder (Sum = A XOR B XOR Cin, Carry = Majority(A, B, Cin))
-"""
 
 from typing import List, Tuple, Optional
 
 
 class MPNeuron:
-    """
-    McCulloch-Pitts (MP) Neuron Model:
-    - Excitatory inputs contribute positively towards reaching the threshold theta.
-    - Inhibitory inputs, if active (= 1), immediately suppress the neuron firing (output = 0).
-    """
+    
     def __init__(self, weights: List[int], threshold: int, inhibitory_indices: Optional[List[int]] = None):
         self.weights = weights
         self.threshold = threshold
@@ -31,11 +18,6 @@ class MPNeuron:
         # Calculate net input from excitatory connections
         net_input = sum(w * x for i, (w, x) in enumerate(zip(self.weights, inputs)) if i not in self.inhibitory_indices)
         return 1 if net_input >= self.threshold else 0
-
-
-# -------------------------------------------------------------
-# Basic Logic Gate Implementations using MP Neurons
-# -------------------------------------------------------------
 
 def mp_and(x1: int, x2: int) -> int:
     """AND Gate: w = [1, 1], theta = 2"""
@@ -73,30 +55,13 @@ def mp_xor(x1: int, x2: int) -> int:
     z2 = mp_and_not(x2, x1)  # ~x1 * x2
     return mp_or(z1, z2)
 
-
-# -------------------------------------------------------------
-# Arithmetic Circuits using MP Neurons
-# -------------------------------------------------------------
-
 def half_adder(a: int, b: int) -> Tuple[int, int]:
-    """
-    Half Adder Circuit:
-    - Sum   = A XOR B (using MP XOR network)
-    - Carry = A AND B (using MP AND neuron)
-    """
+
     s = mp_xor(a, b)
     c = mp_and(a, b)
     return s, c
 
-
 def full_adder(a: int, b: int, cin: int) -> Tuple[int, int]:
-    """
-    Full Adder Circuit:
-    - Sum   = A XOR B XOR Cin (Cascaded MP XOR)
-    - Carry = Majority function of 3 inputs:
-              MP Neuron with weights = [1, 1, 1] and threshold theta = 2
-              (fires when at least 2 out of 3 inputs are 1).
-    """
     # Sum: Cascaded XOR
     sum_ab = mp_xor(a, b)
     s = mp_xor(sum_ab, cin)

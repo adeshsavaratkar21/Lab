@@ -1,140 +1,135 @@
 """
-Experiment 4: Single Layer Perceptron
+Experiment 4: Single Layer Perceptron & Adaline Network
 File: perceptron.py
-Description: Implementation of Rosenblatt's Single-Layer Perceptron Learning Algorithm.
-             Demonstrates:
-             1. Bipolar and Binary Perceptron training with step-by-step weight updates.
-             2. Convergence on linearly separable functions (AND, OR, NAND, NOR).
-             3. Non-convergence / limitation proof on XOR (Minsky-Papert theorem).
-             4. Extraction of the linear decision boundary equation.
+Description: Implementation of Single Layer Perceptron Learning Algorithm for Bipolar AND Gate.
+             Matches Lab Manual format and table outputs.
 """
 
-from typing import List, Tuple, Callable
+import sys
+if hasattr(sys.stdout, 'reconfigure'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+
+try:
+    import numpy as np
+except ImportError:
+    class _NP:
+        def array(self, obj):
+            return obj
+    np = _NP()
 
 
-class Perceptron:
-    def __init__(self, num_inputs: int, lr: float = 1.0, threshold: float = 0.0, mode: str = "bipolar"):
-        """
-        :param num_inputs: Number of feature inputs (excluding bias)
-        :param lr: Learning rate (alpha)
-        :param threshold: Activation threshold theta
-        :param mode: 'bipolar' (inputs/targets in {-1, 1}) or 'binary' (inputs/targets in {0, 1})
-        """
-        self.num_inputs = num_inputs
-        self.lr = lr
-        self.threshold = threshold
-        self.mode = mode
-        self.weights = [0.0] * num_inputs
-        self.bias = 0.0
+# 1: Define the Bipolar Step Activation Function
+def activation_function(yin):
+    """
+    Activation function:
+    y =  1  if yin > 0
+    y =  0  if yin == 0
+    y = -1  if yin < 0
+    """
+    if yin > 0:
+        return 1
+    elif yin == 0:
+        return 0
+    else:
+        return -1
 
-    def activation(self, y_in: float) -> int:
-        if self.mode == "bipolar":
-            if y_in > self.threshold:
-                return 1
-            elif y_in < -self.threshold:
-                return -1
+
+def main():
+    # 2: Training Data and Initialization
+    # AND Gate with Bipolar Inputs (x1, x2) and Bipolar Target (t)
+    X = np.array([
+        [ 1,  1],
+        [ 1, -1],
+        [-1,  1],
+        [-1, -1]
+    ])
+    # Desired Targets (t)
+    T = np.array([1, -1, -1, -1])
+
+    # Initial parameters
+    w1 = 0
+    w2 = 0
+    b = 0
+    alpha = 1
+
+    print("Dataset initialized successfully:")
+    print("x1  x2  |  t")
+    print("-" * 14)
+    for (x1_val, x2_val), t_val in zip(X, T):
+        print(f"{x1_val:2d}  {x2_val:2d}  | {t_val:2d}")
+
+    # 3: Training the Perceptron Network
+    print("=" * 80)
+    print("EXP: TO DESIGN SINGLE LAYER PERCEPTRON USING PYTHON")
+    print("OUTPUT: AND GATE USING PERCEPTRON LEARNING RULE")
+    print("=" * 80)
+    header = f"{'EPOCH':<7} | {'x1':<3} {'x2':<3} {'t':<3} | {'yin':<5} {'y':<3} | {'Δw1':<4} {'Δw2':<4} {'Δb':<4} | {'w1':<4} {'w2':<4} {'b':<4}"
+    print(header)
+    print("-" * 80)
+
+    epoch = 0
+    converged = False
+    while not converged:
+        epoch += 1
+        weight_changed = False
+        for i in range(len(X)):
+            x1_in = X[i][0]
+            x2_in = X[i][1]
+            t = T[i]
+
+            # Step 1: Net input calculation: yin = b + x1*w1 + x2*w2
+            yin = b + (x1_in * w1) + (x2_in * w2)
+
+            # Step 2: Apply activation function
+            y = activation_function(yin)
+
+            # Step 3: Check if target equals calculated output
+            if t != y:
+                # Weight update rule
+                delta_w1 = alpha * t * x1_in
+                delta_w2 = alpha * t * x2_in
+                delta_b  = alpha * t
+
+                # New weights and bias
+                w1 = w1 + delta_w1
+                w2 = w2 + delta_w2
+                b  = b + delta_b
+                weight_changed = True
             else:
-                return 0
-        else:
-            return 1 if y_in >= self.threshold else 0
+                # No change in weights
+                delta_w1 = 0
+                delta_w2 = 0
+                delta_b  = 0
 
-    def predict(self, x: List[float]) -> int:
-        y_in = self.bias + sum(w * xi for w, xi in zip(self.weights, x))
-        return self.activation(y_in)
+            # Display row matching lab manual table
+            print(f"{epoch:<7} | {x1_in:3d} {x2_in:3d} {t:3d} | {yin:5d} {y:3d} | {delta_w1:4d} {delta_w2:4d} {delta_b:4d} | {w1:4d} {w2:4d} {b:4d}")
 
-    def train(self, X: List[List[float]], targets: List[int], max_epochs: int = 50, verbose: bool = True) -> bool:
-        """
-        Trains the perceptron using the delta / perceptron learning rule.
-        Returns True if converged, False if max_epochs reached without convergence.
-        """
-        converged = False
-        epoch = 0
+        print("-" * 80)
+        # Stop condition: an epoch with zero weight updates
+        if not weight_changed:
+            converged = True
 
-        if verbose:
-            print(f"\n--- Training Perceptron (mode={self.mode}, lr={self.lr}, theta={self.threshold}) ---")
-            print(f"{'Epoch':<6} | {'Sample':<8} | {'Target':<6} | {'Net y_in':<9} | {'Pred y':<6} | {'Weight Updates (w, b)':<25}")
-            print("-" * 75)
+    print(f"\nTraining Converged in {epoch} Epochs!")
+    print(f"Final Weights: w1 = {w1}, w2 = {w2}")
+    print(f"Final Bias:    b = {b}")
+    print(f"Decision Boundary Equation: {w1}*x1 + {w2}*x2 + ({b}) = 0")
 
-        while epoch < max_epochs and not converged:
-            epoch += 1
-            weight_changed = False
-
-            for i, (x_vec, target) in enumerate(zip(X, targets)):
-                y_in = self.bias + sum(w * xi for w, xi in zip(self.weights, x_vec))
-                pred = self.activation(y_in)
-
-                if pred != target:
-                    weight_changed = True
-                    # Weight and bias update
-                    if self.mode == "bipolar":
-                        delta_w = [self.lr * target * xi for xi in x_vec]
-                        delta_b = self.lr * target
-                    else:
-                        error = target - pred
-                        delta_w = [self.lr * error * xi for xi in x_vec]
-                        delta_b = self.lr * error
-
-                    self.weights = [w + dw for w, dw in zip(self.weights, delta_w)]
-                    self.bias += delta_b
-
-                    update_str = f"dw={delta_w}, db={delta_b:+.1f}"
-                else:
-                    update_str = "No Change"
-
-                if verbose and epoch <= 3:  # Show step-by-step for first 3 epochs to avoid log clutter
-                    x_str = str(x_vec)
-                    print(f"{epoch:<6} | {x_str:<8} | {target:<6} | {y_in:<9.2f} | {pred:<6} | {update_str}")
-
-            if not weight_changed:
-                converged = True
-                break
-
-        if verbose:
-            print("-" * 75)
-            if converged:
-                print(f"--> Converged successfully in {epoch} epoch(s)!")
-            else:
-                print(f"--> Reached maximum epochs ({max_epochs}) without convergence (Data is non-linearly separable).")
-
-            print(f"Final Weights: {[round(w, 4) for w in self.weights]}")
-            print(f"Final Bias   : {round(self.bias, 4)}")
-            if len(self.weights) == 2:
-                # Decision boundary: w1*x1 + w2*x2 + b = 0 => x2 = -(w1*x1 + b) / w2
-                w1, w2 = self.weights
-                if abs(w2) > 1e-6:
-                    print(f"Decision Boundary: {w1:.2f}*x1 + {w2:.2f}*x2 + ({self.bias:.2f}) = 0")
-                    print(f"Slope (m): {-w1/w2:.2f}, Intercept (c): {-self.bias/w2:.2f}")
-
-        return converged
-
-
-def demo_gate(gate_name: str, X: List[List[float]], targets: List[int], mode: str = "bipolar"):
-    print("\n" + "=" * 75)
-    print(f"         PERCEPTRON EXPERIMENT: {gate_name.upper()} FUNCTION ({mode.upper()})")
-    print("=" * 75)
-    p = Perceptron(num_inputs=len(X[0]), lr=1.0, threshold=0.0, mode=mode)
-    converged = p.train(X, targets, max_epochs=20, verbose=True)
-
-    print("\nTesting Trained Perceptron:")
-    print(f"{'Input (X)':<15} | {'Target':<8} | {'Predicted':<10} | {'Status'}")
-    print("-" * 50)
-    for x_vec, target in zip(X, targets):
-        pred = p.predict(x_vec)
-        status = "CORRECT" if pred == target else "WRONG"
-        print(f"{str(x_vec):<15} | {target:<8} | {pred:<10} | {status}")
+    # 4: Testing the Trained Perceptron
+    print("\n--- TESTING TRAINED PERCEPTRON FOR AND GATE ---")
+    print(f"{'x1':<6} {'x2':<6} {'yin':<6} {'Calculated (y)':<16} {'Target (t)':<12} {'Status'}")
+    print("-" * 65)
+    for i in range(len(X)):
+        x1_in = X[i][0]
+        x2_in = X[i][1]
+        t = T[i]
+        yin = b + (x1_in * w1) + (x2_in * w2)
+        y = activation_function(yin)
+        status = "Correct" if y == t else "Error"
+        print(f"{x1_in:<6} {x2_in:<6} {yin:<6} {y:<16} {t:<12} {status}")
 
 
 if __name__ == "__main__":
-    # 1. Bipolar AND Gate (Linearly Separable)
-    bipolar_X = [[1, 1], [1, -1], [-1, 1], [-1, -1]]
-    and_targets = [1, -1, -1, -1]
-    demo_gate("Bipolar AND Gate", bipolar_X, and_targets, mode="bipolar")
-
-    # 2. Bipolar OR Gate (Linearly Separable)
-    or_targets = [1, 1, 1, -1]
-    demo_gate("Bipolar OR Gate", bipolar_X, or_targets, mode="bipolar")
-
-    # 3. Bipolar XOR Gate (Non-Linearly Separable - Should Fail to Converge)
-    xor_targets = [-1, 1, 1, -1]
-    demo_gate("Bipolar XOR Gate (Minsky-Papert Limitation Test)", bipolar_X, xor_targets, mode="bipolar")
-
+    main()

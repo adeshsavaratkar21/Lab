@@ -1,16 +1,8 @@
-/**
- * Experiment 1: Search Algorithms
- * File: puzzle.c
- * Description: 8-Puzzle Problem solved using A* Search Algorithm.
- *              Evaluation function: f(n) = g(n) + h(n)
- *              Heuristic: Manhattan Distance (admissible and consistent).
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define MAX_NODES 1000  // Maximum nodes pool
+#define MAX_NODES 2000  // Maximum nodes pool in memory
 
 typedef struct {
     int board[3][3];
@@ -114,9 +106,36 @@ void printPath(int index) {
     printf("-------------------------------\n\n");
 }
 
-void solve(int start[3][3]) {
-    int blankX = 0, blankY = 0;
+// Verifies if the 8-puzzle board configuration is solvable
+bool isSolvable(int board[3][3]) {
+    int arr[9];
+    int k = 0;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            arr[k++] = board[i][j];
+        }
+    }
 
+    int invCount = 0;
+    for (int i = 0; i < 9; i++) {
+        for (int j = i + 1; j < 9; j++) {
+            if (arr[i] != 0 && arr[j] != 0 && arr[i] > arr[j]) {
+                invCount++;
+            }
+        }
+    }
+    // An 8-puzzle configuration is solvable if and only if the inversion count is even
+    return (invCount % 2 == 0);
+}
+
+void solve(int start[3][3]) {
+    if (!isSolvable(start)) {
+        printf("\n[ERROR] The entered puzzle configuration is UNSOLVABLE!\n");
+        printf("The inversion count must be even to reach the standard goal state.\n");
+        return;
+    }
+
+    int blankX = 0, blankY = 0;
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             if (start[i][j] == 0) {
@@ -147,7 +166,7 @@ void solve(int start[3][3]) {
         int currIdx = getBestNodeIndex();
 
         if (currIdx == -1) {
-            printf("No Solution Found.\n");
+            printf("No Solution Found within search limits.\n");
             return;
         }
 
@@ -161,7 +180,6 @@ void solve(int start[3][3]) {
             return;
         }
 
-        // Branch 4 directions: Up, Down, Left, Right
         for (int k = 0; k < 4; k++) {
             int nx = nodes[currIdx].x + dx[k];
             int ny = nodes[currIdx].y + dy[k];
@@ -172,7 +190,7 @@ void solve(int start[3][3]) {
                     for (int j = 0; j < 3; j++)
                         newBoard[i][j] = nodes[currIdx].board[i][j];
 
-                // Swap blank tile
+                // Swap blank space
                 newBoard[nodes[currIdx].x][nodes[currIdx].y] = newBoard[nx][ny];
                 newBoard[nx][ny] = 0;
 
@@ -196,12 +214,23 @@ void solve(int start[3][3]) {
 }
 
 int main() {
-    int start[3][3] = {
-        {1, 2, 3},
-        {0, 4, 6},
-        {7, 5, 8}
-    };
+    int start[3][3];
 
+    printf("==================================================\n");
+    printf("         8-PUZZLE SOLVER USING A* SEARCH          \n");
+    printf("==================================================\n");
+    printf("Enter the 3x3 initial board matrix row by row.\n");
+    printf("(Use digits 1 to 8 for tiles, and 0 for the blank tile):\n\n");
+
+    for (int i = 0; i < 3; i++) {
+        printf("Enter row %d (3 space-separated numbers): ", i + 1);
+        for (int j = 0; j < 3; j++) {
+            scanf("%d", &start[i][j]);
+        }
+    }
+
+    printf("\nSolving using A* Heuristic Search...\n");
     solve(start);
+
     return 0;
 }

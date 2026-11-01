@@ -17,7 +17,8 @@ Lab/
 ├── Exp3/
 │   └── mp_adders.py
 ├── Exp4/
-│   └── perceptron.py
+│   ├── perceptron.py
+│   └── adaline.py
 ├── Exp5/
 │   └── backprop.py
 ├── Exp6/
@@ -69,10 +70,14 @@ Lab/
 
 ---
 
-### Exp4: Single Layer Perceptron (`Python`)
-* **`Exp4/perceptron.py`**: Rosenblatt's Perceptron learning algorithm, decision boundary, and linear separability vs XOR limitation.
+### Exp4: Single Layer Perceptron & Adaline Network (`Python`)
+* **`Exp4/perceptron.py`**: Perceptron learning rule for Bipolar AND gate with epoch-by-epoch weights & decision boundary table.
   ```bash
   python Exp4/perceptron.py
+  ```
+* **`Exp4/adaline.py`**: Adaline Network using Delta Rule (Widrow-Hoff) for Bipolar OR gate with continuous error and MSE calculation.
+  ```bash
+  python Exp4/adaline.py
   ```
 
 ---

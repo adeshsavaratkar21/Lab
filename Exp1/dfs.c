@@ -1,9 +1,3 @@
-/**
- * Experiment 1: Search Algorithms
- * File: dfs.c
- * Description: Water Jug Problem solved using Depth-First Search (DFS).
- *              Explores along each branch to deepest node using a stack.
- */
 
 #include <stdio.h>
 #define MAX 100

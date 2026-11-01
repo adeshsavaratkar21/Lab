@@ -1,13 +1,3 @@
-"""
-Experiment 2: Intelligent Agents
-File: vacuum_agent.py
-Description: Vacuum Cleaner Agent implementations in Artificial Intelligence.
-             Includes:
-             1. PEAS Framework Specification (Performance, Environment, Actuators, Sensors)
-             2. Simple Reflex Agent (Condition-Action rules based on immediate percept)
-             3. Model-Based Reflex Agent (Maintains internal world state)
-             4. Multi-room Simulation and Performance Benchmarking
-"""
 
 from typing import Dict, List, Tuple
 import random
