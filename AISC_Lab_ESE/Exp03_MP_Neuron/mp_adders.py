@@ -152,3 +152,4 @@ def display_truth_tables():
 
 if __name__ == "__main__":
     display_truth_tables()
+

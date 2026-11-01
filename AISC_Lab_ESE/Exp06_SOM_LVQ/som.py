@@ -113,3 +113,4 @@ def demo_som():
 
 if __name__ == "__main__":
     demo_som()
+

@@ -241,3 +241,4 @@ if __name__ == "__main__":
     run_simulation(agent_type="model", start_location='A', initial_dirt={'A': 'Dirty', 'B': 'Dirty'}, max_steps=5)
     # 3. Permutations benchmark
     evaluate_all_permutations()
+

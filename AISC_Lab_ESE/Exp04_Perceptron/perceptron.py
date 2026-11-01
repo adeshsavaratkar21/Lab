@@ -137,3 +137,4 @@ if __name__ == "__main__":
     # 3. Bipolar XOR Gate (Non-Linearly Separable - Should Fail to Converge)
     xor_targets = [-1, 1, 1, -1]
     demo_gate("Bipolar XOR Gate (Minsky-Papert Limitation Test)", bipolar_X, xor_targets, mode="bipolar")
+

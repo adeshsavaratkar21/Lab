@@ -160,3 +160,4 @@ def demo_anfis():
 
 if __name__ == "__main__":
     demo_anfis()
+
