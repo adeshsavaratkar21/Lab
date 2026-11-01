@@ -1,3 +1,11 @@
+/**
+ * Experiment 1: Search Algorithms
+ * File: puzzle.c
+ * Description: 8-Puzzle Problem solved using A* Search Algorithm.
+ *              Evaluation function: f(n) = g(n) + h(n)
+ *              Heuristic: Manhattan Distance (admissible and consistent).
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>

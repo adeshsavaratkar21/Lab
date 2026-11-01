@@ -1,3 +1,10 @@
+/**
+ * Experiment 1: Search Algorithms
+ * File: bfs.c
+ * Description: Water Jug Problem solved using Breadth-First Search (BFS).
+ *              Explores state space level-by-level using a queue to find the goal state.
+ */
+
 #include <stdio.h>
 #define MAX 100
 
