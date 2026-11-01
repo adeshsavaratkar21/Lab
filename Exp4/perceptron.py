@@ -1,9 +1,3 @@
-"""
-Experiment 4: Single Layer Perceptron & Adaline Network
-File: perceptron.py
-Description: Implementation of Single Layer Perceptron Learning Algorithm for Bipolar AND Gate.
-             Matches Lab Manual format and table outputs.
-"""
 
 import sys
 

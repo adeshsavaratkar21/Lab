@@ -1,180 +1,164 @@
 """
 Experiment 5: Backpropagation Neural Network (BPN)
 File: backprop.py
-Description: Implementation of Multi-Layer Perceptron (MLP) trained with the
-             Error Backpropagation algorithm using pure Python standard library.
-             Successfully learns non-linear decision boundaries (solving the XOR problem).
+Description: Implementation of Backpropagation Algorithm for a 2-Hidden-Unit, 1-Output-Unit BPN.
+             Step-by-step trace of forward pass, error gradients, backward pass, and weight updates.
+             Matches Lab Manual format and exact notebook numerical outputs.
 """
 
+import sys
 import math
-import random
-from typing import List, Tuple
+
+if hasattr(sys.stdout, 'reconfigure'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+
+# Fallback for numpy if not installed locally
+try:
+    import numpy as np
+    exp_fn = np.exp
+except ImportError:
+    exp_fn = math.exp
 
 
-def sigmoid(x: float) -> float:
-    """Standard logistic sigmoid activation function."""
-    # Clip x to prevent math range overflow
-    if x < -700:
-        return 0.0
-    if x > 700:
-        return 1.0
-    return 1.0 / (1.0 + math.exp(-x))
+# Define Binary Sigmoidal Activation Function: f(x) = 1 / (1 + e^(-x))
+def sigmoid(x):
+    return 1.0 / (1.0 + exp_fn(-x))
 
 
-def sigmoid_derivative(output: float) -> float:
-    """Derivative of sigmoid given its activated output value: f'(x) = f(x) * (1 - f(x))."""
+# Derivative of Sigmoidal Activation: f'(x) = f(x) * (1 - f(x))
+def sigmoid_derivative(output):
     return output * (1.0 - output)
 
 
-class BackpropagationNN:
-    def __init__(self, input_dim: int, hidden_dim: int, output_dim: int, lr: float = 0.5, momentum: float = 0.1, seed: int = 42):
-        self.input_dim = input_dim
-        self.hidden_dim = hidden_dim
-        self.output_dim = output_dim
-        self.lr = lr
-        self.momentum = momentum
+def main():
+    # 1: Define activation functions and initialize given problem parameters
+    # Given Input Pattern and Desired Target
+    x1, x2 = 0.0, 1.0
+    target = 1.0
 
-        random.seed(seed)
+    # Given Learning Rate (alpha)
+    alpha = 0.25
 
-        # Initialize weights with small random values between -0.5 and 0.5
-        self.w_ih = [[random.uniform(-0.5, 0.5) for _ in range(hidden_dim)] for _ in range(input_dim)]
-        self.b_h = [random.uniform(-0.5, 0.5) for _ in range(hidden_dim)]
+    # Given Initial Weights and Biases (Input to Hidden Layer)
+    v11, v21, v01 = 0.6, -0.1, 0.3
+    v12, v22, v02 = -0.3, 0.4, 0.5
 
-        self.w_ho = [[random.uniform(-0.5, 0.5) for _ in range(output_dim)] for _ in range(hidden_dim)]
-        self.b_o = [random.uniform(-0.5, 0.5) for _ in range(output_dim)]
+    # Given Initial Weights and Bias (Hidden to Output Layer)
+    w1, w2, w0 = 0.4, 0.1, -0.2
 
-        # Momentum change tracking
-        self.prev_delta_w_ih = [[0.0] * hidden_dim for _ in range(input_dim)]
-        self.prev_delta_b_h = [0.0] * hidden_dim
-        self.prev_delta_w_ho = [[0.0] * output_dim for _ in range(hidden_dim)]
-        self.prev_delta_b_o = [0.0] * output_dim
+    print(" INITIAL NETWORK SETUP ")
+    print(f"Inputs: x1 = {x1}, x2 = {x2} | Target = {target} | Learning Rate alpha = {alpha}")
+    print(f"Initial Hidden Unit 1 Weights: v01 = {v01}, v11 = {v11}, v21 = {v21}")
+    print(f"Initial Hidden Unit 2 Weights: v02 = {v02}, v12 = {v12}, v22 = {v22}")
+    print(f"Initial Output Unit Weights:   w0  = {w0}, w1  = {w1}, w2  = {w2}")
 
-    def forward(self, x: List[float]) -> Tuple[List[float], List[float]]:
-        """
-        Forward Propagation:
-        Computes hidden layer activations and output layer activations.
-        """
-        # Hidden layer
-        hidden_acts = []
-        for j in range(self.hidden_dim):
-            net = self.b_h[j] + sum(x[i] * self.w_ih[i][j] for i in range(self.input_dim))
-            hidden_acts.append(sigmoid(net))
+    # 2: Calculate net input and output for Hidden Neurons (Z1 and Z2)
+    # Net input to Z1: zin1 = v01 + x1*v11 + x2*v21
+    zin1 = v01 + (x1 * v11) + (x2 * v21)
+    # Output of Z1: z1 = f(zin1)
+    z1 = sigmoid(zin1)
 
-        # Output layer
-        output_acts = []
-        for k in range(self.output_dim):
-            net = self.b_o[k] + sum(hidden_acts[j] * self.w_ho[j][k] for j in range(self.hidden_dim))
-            output_acts.append(sigmoid(net))
+    # Net input to Z2: zin2 = v02 + x1*v12 + x2*v22
+    zin2 = v02 + (x1 * v12) + (x2 * v22)
+    # Output of Z2: z2 = f(zin2)
+    z2 = sigmoid(zin2)
 
-        return hidden_acts, output_acts
+    print("\n STEP 1: FORWARD PASS (HIDDEN LAYER) ")
+    print(f"Hidden Unit Z1: zin1 = {zin1:.4f}, z1 = {z1:.4f}")
+    print(f"Hidden Unit Z2: zin2 = {zin2:.4f}, z2 = {z2:.4f}")
 
-    def backward(self, x: List[float], targets: List[float], hidden_acts: List[float], output_acts: List[float]):
-        """
-        Backward Error Propagation:
-        Calculates error gradients and updates weights using gradient descent + momentum.
-        """
-        # 1. Output Layer Error Term: delta_o_k = (t_k - y_k) * y_k * (1 - y_k)
-        delta_o = []
-        for k in range(self.output_dim):
-            error = targets[k] - output_acts[k]
-            delta_o.append(error * sigmoid_derivative(output_acts[k]))
+    # 3: Calculate net input and output for Output Neuron (Y)
+    # Net input to Y: yin = w0 + z1*w1 + z2*w2
+    yin = w0 + (z1 * w1) + (z2 * w2)
+    # Actual Output of Y: y = f(yin)
+    y = sigmoid(yin)
 
-        # 2. Hidden Layer Error Term: delta_h_j = sum(delta_o_k * w_ho_jk) * h_j * (1 - h_j)
-        delta_h = []
-        for j in range(self.hidden_dim):
-            sum_err = sum(delta_o[k] * self.w_ho[j][k] for k in range(self.output_dim))
-            delta_h.append(sum_err * sigmoid_derivative(hidden_acts[j]))
+    print("\n STEP 2: FORWARD PASS (OUTPUT LAYER) ")
+    print(f"Net Input entering Output Layer (yin): {yin:.5f}")
+    print(f"Calculated Network Output (y):          {y:.4f}")
+    print(f"Error (Target - Calculated):           {target - y:.4f}")
 
-        # 3. Update Hidden-to-Output Weights
-        for j in range(self.hidden_dim):
-            for k in range(self.output_dim):
-                dw = self.lr * delta_o[k] * hidden_acts[j] + self.momentum * self.prev_delta_w_ho[j][k]
-                self.w_ho[j][k] += dw
-                self.prev_delta_w_ho[j][k] = dw
+    # 4: Calculate Output Error Gradient (delta_k) and changes in weights (delta_w)
+    # Derivative of sigmoid at output unit: f'(yin) = y * (1 - y)
+    f_prime_y = sigmoid_derivative(y)
+    # Output error factor: delta1 = (target - y) * f'(yin)
+    delta_output = (target - y) * f_prime_y
 
-        for k in range(self.output_dim):
-            db = self.lr * delta_o[k] + self.momentum * self.prev_delta_b_o[k]
-            self.b_o[k] += db
-            self.prev_delta_b_o[k] = db
+    # Weight correction terms between Hidden and Output layer
+    delta_w1 = alpha * delta_output * z1
+    delta_w2 = alpha * delta_output * z2
+    delta_w0 = alpha * delta_output       # Bias correction
 
-        # 4. Update Input-to-Hidden Weights
-        for i in range(self.input_dim):
-            for j in range(self.hidden_dim):
-                dw = self.lr * delta_h[j] * x[i] + self.momentum * self.prev_delta_w_ih[i][j]
-                self.w_ih[i][j] += dw
-                self.prev_delta_w_ih[i][j] = dw
+    print("\n STEP 3: BACKWARD PASS (OUTPUT LAYER) ")
+    print(f"Derivative f'(yin) = {f_prime_y:.4f}")
+    print(f"Output Error Term delta_k (delta1) = {delta_output:.4f}")
+    print(f"Weight Changes: Delta w1 = {delta_w1:.5f}, Delta w2 = {delta_w2:.5f}, Delta w0 = {delta_w0:.5f}")
 
-        for j in range(self.hidden_dim):
-            db = self.lr * delta_h[j] + self.momentum * self.prev_delta_b_h[j]
-            self.b_h[j] += db
-            self.prev_delta_b_h[j] = db
+    # 5: Propagate error back to hidden units and calculate changes in weights (delta_v)
+    # Net error coming into hidden units from output: delta_inj = delta_k * w_j
+    delta_in1 = delta_output * w1
+    delta_in2 = delta_output * w2
 
-    def train(self, X: List[List[float]], Y: List[List[float]], epochs: int = 5000, log_every: int = 500):
-        print(f"\n--- Starting BPN Training ({epochs} Epochs, LR={self.lr}) ---")
-        for epoch in range(1, epochs + 1):
-            total_loss = 0.0
+    # Derivatives for hidden units: f'(zin) = z * (1 - z)
+    f_prime_z1 = sigmoid_derivative(z1)
+    f_prime_z2 = sigmoid_derivative(z2)
 
-            for x_vec, target_vec in zip(X, Y):
-                hidden_acts, output_acts = self.forward(x_vec)
-                # Mean Squared Error: sum((t - y)^2) / 2
-                loss = sum((t - o) ** 2 for t, o in zip(target_vec, output_acts)) * 0.5
-                total_loss += loss
-                self.backward(x_vec, target_vec, hidden_acts, output_acts)
+    # Error terms for hidden units: delta_j = delta_inj * f'(zin_j)
+    delta_h1 = delta_in1 * f_prime_z1
+    delta_h2 = delta_in2 * f_prime_z2
 
-            mse = total_loss / len(X)
-            if epoch == 1 or epoch % log_every == 0 or epoch == epochs:
-                print(f"Epoch {epoch:5d}/{epochs} | MSE Loss: {mse:.6f}")
+    # Weight corrections for Hidden Unit Z1 links
+    delta_v11 = alpha * delta_h1 * x1
+    delta_v21 = alpha * delta_h1 * x2
+    delta_v01 = alpha * delta_h1       # Bias correction for Z1
 
-    def predict(self, x: List[float]) -> List[float]:
-        _, output_acts = self.forward(x)
-        return output_acts
+    # Weight corrections for Hidden Unit Z2 links
+    delta_v12 = alpha * delta_h2 * x1
+    delta_v22 = alpha * delta_h2 * x2
+    delta_v02 = alpha * delta_h2       # Bias correction for Z2
 
+    print("\n STEP 4: BACKWARD PASS (HIDDEN LAYER) ")
+    print(f"Hidden Unit 1 Error (delta_1): {delta_h1:.5f}")
+    print(f"Hidden Unit 2 Error (delta_2): {delta_h2:.5f}")
+    print(f"Weight Changes for Z1: Delta v11 = {delta_v11:.5f}, Delta v21 = {delta_v21:.5f}, Delta v01 = {delta_v01:.5f}")
+    print(f"Weight Changes for Z2: Delta v12 = {delta_v12:.7f}, Delta v22 = {delta_v22:.7f}, Delta v02 = {delta_v02:.7f}")
 
-def solve_xor_problem():
-    print("=" * 65)
-    print("      BACKPROPAGATION NETWORK (BPN) - SOLVING XOR PROBLEM     ")
-    print("=" * 65)
-    print("Architecture: 2 Inputs -> 2 Hidden Neurons -> 1 Output Neuron")
-    print("Activation  : Logistic Sigmoid: f(x) = 1 / (1 + e^-x)")
+    # 6: Compute new weights and print comparison table
+    # Update Hidden-to-Output weights
+    w1_new = w1 + delta_w1
+    w2_new = w2 + delta_w2
+    w0_new = w0 + delta_w0
 
-    # XOR Dataset
-    X = [
-        [0.0, 0.0],
-        [0.0, 1.0],
-        [1.0, 0.0],
-        [1.0, 1.0]
-    ]
-    Y = [
-        [0.0],
-        [1.0],
-        [1.0],
-        [0.0]
-    ]
+    # Update Input-to-Hidden weights
+    v11_new = v11 + delta_v11
+    v21_new = v21 + delta_v21
+    v01_new = v01 + delta_v01
 
-    bpn = BackpropagationNN(input_dim=2, hidden_dim=3, output_dim=1, lr=0.8, momentum=0.2, seed=42)
-    bpn.train(X, Y, epochs=6000, log_every=1000)
+    v12_new = v12 + delta_v12
+    v22_new = v22 + delta_v22
+    v02_new = v02 + delta_v02
 
     print("\n" + "=" * 65)
-    print("                 FINAL EVALUATION / PREDICTIONS               ")
+    print("FINAL UPDATED WEIGHTS AND BIASES")
     print("=" * 65)
-    print(f"{'Input (X1, X2)':<16} | {'Target':<8} | {'Raw Output':<14} | {'Rounded':<8} | {'Status'}")
+    print(f"{'Parameter':<15} | {'Old Value':<12} | {'Delta':<12} | {'New Value':<12}")
     print("-" * 65)
-
-    all_correct = True
-    for x_vec, target in zip(X, Y):
-        raw_pred = bpn.predict(x_vec)[0]
-        rounded_pred = 1 if raw_pred >= 0.5 else 0
-        target_val = int(target[0])
-        status = "PASSED" if rounded_pred == target_val else "FAILED"
-        if status == "FAILED":
-            all_correct = False
-        print(f"({x_vec[0]:.0f}, {x_vec[1]:.0f}){' ' * 9} | {target_val:<8} | {raw_pred:<14.6f} | {rounded_pred:<8} | {status}")
-
+    print(f"{'w1 (Z1 -> Y)':<15} | {w1:<12.4f} | {delta_w1:<12.5f} | {w1_new:<12.4f}")
+    print(f"{'w2 (Z2 -> Y)':<15} | {w2:<12.4f} | {delta_w2:<12.5f} | {w2_new:<12.5f}")
+    print(f"{'w0 (Bias Y)':<15} | {w0:<12.4f} | {delta_w0:<12.5f} | {w0_new:<12.5f}")
     print("-" * 65)
-    print(f"Overall Result: {'All 4 cases matched successfully!' if all_correct else 'Not fully converged.'}")
+    print(f"{'v11 (X1 -> Z1)':<15} | {v11:<12.4f} | {delta_v11:<12.5f} | {v11_new:<12.4f}")
+    print(f"{'v21 (X2 -> Z1)':<15} | {v21:<12.4f} | {delta_v21:<12.5f} | {v21_new:<12.5f}")
+    print(f"{'v01 (Bias Z1)':<15} | {v01:<12.4f} | {delta_v01:<12.5f} | {v01_new:<12.5f}")
+    print("-" * 65)
+    print(f"{'v12 (X1 -> Z2)':<15} | {v12:<12.4f} | {delta_v12:<12.7f} | {v12_new:<12.4f}")
+    print(f"{'v22 (X2 -> Z2)':<15} | {v22:<12.4f} | {delta_v22:<12.7f} | {v22_new:<12.7f}")
+    print(f"{'v02 (Bias Z2)':<15} | {v02:<12.4f} | {delta_v02:<12.7f} | {v02_new:<12.7f}")
     print("=" * 65)
 
 
 if __name__ == "__main__":
-    solve_xor_problem()
-
+    main()

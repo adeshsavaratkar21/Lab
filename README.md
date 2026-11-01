@@ -83,7 +83,7 @@ Lab/
 ---
 
 ### Exp5: Backpropagation Neural Network (BPN) (`Python`)
-* **`Exp5/backprop.py`**: Multi-Layer Perceptron (MLP) trained with backpropagation, gradient descent, and momentum solving XOR.
+* **`Exp5/backprop.py`**: Step-by-step Backpropagation algorithm tracing forward pass (hidden & output layers), error gradients ($\delta_k$, $\delta_j$), and updated weights/biases table.
   ```bash
   python Exp5/backprop.py
   ```

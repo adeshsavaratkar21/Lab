@@ -1,9 +1,3 @@
-"""
-Experiment 4: Single Layer Perceptron & Adaline Network
-File: adaline.py
-Description: Implementation of Adaline (Adaptive Linear Neuron) Network using Delta Rule (Widrow-Hoff)
-             for Bipolar OR Gate. Matches Lab Manual format and table outputs.
-"""
 
 import sys
 
