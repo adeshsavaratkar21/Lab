@@ -9,41 +9,28 @@ This repository contains the complete implementation of lab experiments for **Ar
 ```text
 Lab/
 ├── Exp1/
-│   ├── bfs/
-│   │   └── bfs.c
-│   ├── dfs/
-│   │   └── dfs.c
-│   └── puzzle/
-│       └── puzzle.c
+│   ├── bfs.c
+│   ├── dfs.c
+│   └── puzzle.c
 ├── Exp2/
-│   └── vacuum/
-│       └── vacuum.py
+│   └── vacuum_agent.py
 ├── Exp3/
-│   └── adders/
-│       └── adders.py
+│   └── mp_adders.py
 ├── Exp4/
-│   └── perceptron/
-│       └── perceptron.py
+│   └── perceptron.py
 ├── Exp5/
-│   └── backprop/
-│       └── backprop.py
+│   └── backprop.py
 ├── Exp6/
-│   ├── som/
-│   │   └── som.py
-│   └── lvq/
-│       └── lvq.py
+│   ├── som.py
+│   └── lvq.py
 ├── Exp7/
-│   └── bam/
-│       └── bam.py
+│   └── bam.py
 ├── Exp8/
-│   └── fuzzy/
-│       └── fuzzy.py
+│   └── fuzzy_operations.py
 ├── Exp9/
-│   └── controller/
-│       └── controller.py
+│   └── fuzzy_controller.py
 └── Exp10/
-    └── anfis/
-        └── anfis.py
+    └── anfis_model.py
 ```
 
 ---
@@ -51,94 +38,91 @@ Lab/
 ## 📚 Experiment Details & Execution Guide
 
 ### Exp1: Search Algorithms (`C`)
-* **`bfs/bfs.c`**: Water Jug Problem solved using Breadth-First Search (BFS) with queue traversal.
+* **`Exp1/bfs.c`**: Water Jug Problem solved using Breadth-First Search (BFS) with queue traversal.
   ```bash
-  cd Exp1/bfs
-  gcc bfs.c -o bfs && ./bfs
+  gcc Exp1/bfs.c -o bfs && ./bfs
   ```
-* **`dfs/dfs.c`**: Water Jug Problem solved using Depth-First Search (DFS) with stack traversal.
+* **`Exp1/dfs.c`**: Water Jug Problem solved using Depth-First Search (DFS) with stack traversal.
   ```bash
-  cd Exp1/dfs
-  gcc dfs.c -o dfs && ./dfs
+  gcc Exp1/dfs.c -o dfs && ./dfs
   ```
-* **`puzzle/puzzle.c`**: 8-Puzzle solver using A* search algorithm with Manhattan Distance heuristic.
+* **`Exp1/puzzle.c`**: 8-Puzzle solver using A* search algorithm with Manhattan Distance heuristic.
   ```bash
-  cd Exp1/puzzle
-  gcc puzzle.c -o puzzle && ./puzzle
+  gcc Exp1/puzzle.c -o puzzle && ./puzzle
   ```
 
 ---
 
 ### Exp2: Intelligent Agents (`Python`)
-* **`vacuum/vacuum.py`**: PEAS framework, Simple Reflex Agent, and Model-Based Reflex Agent with room state memory and performance tracking.
+* **`Exp2/vacuum_agent.py`**: PEAS framework, Simple Reflex Agent, and Model-Based Reflex Agent with room state memory and performance tracking.
   ```bash
-  python Exp2/vacuum/vacuum.py
+  python Exp2/vacuum_agent.py
   ```
 
 ---
 
 ### Exp3: McCulloch-Pitts (MP) Neuron & Binary Adders (`Python`)
-* **`adders/adders.py`**: MP Neuron model simulating logic gates, multi-layer MP XOR, Half Adder, and Full Adder.
+* **`Exp3/mp_adders.py`**: MP Neuron model simulating logic gates, multi-layer MP XOR, Half Adder, and Full Adder.
   ```bash
-  python Exp3/adders/adders.py
+  python Exp3/mp_adders.py
   ```
 
 ---
 
 ### Exp4: Single Layer Perceptron (`Python`)
-* **`perceptron/perceptron.py`**: Rosenblatt's Perceptron learning algorithm, decision boundary, and linear separability vs XOR limitation.
+* **`Exp4/perceptron.py`**: Rosenblatt's Perceptron learning algorithm, decision boundary, and linear separability vs XOR limitation.
   ```bash
-  python Exp4/perceptron/perceptron.py
+  python Exp4/perceptron.py
   ```
 
 ---
 
 ### Exp5: Backpropagation Neural Network (BPN) (`Python`)
-* **`backprop/backprop.py`**: Multi-Layer Perceptron (MLP) trained with backpropagation, gradient descent, and momentum solving XOR.
+* **`Exp5/backprop.py`**: Multi-Layer Perceptron (MLP) trained with backpropagation, gradient descent, and momentum solving XOR.
   ```bash
-  python Exp5/backprop/backprop.py
+  python Exp5/backprop.py
   ```
 
 ---
 
 ### Exp6: Competitive Learning (SOM & LVQ) (`Python`)
-* **`som/som.py`**: Kohonen Self-Organizing Map (SOM) for unsupervised clustering with BMU selection and decaying neighbourhood.
+* **`Exp6/som.py`**: Kohonen Self-Organizing Map (SOM) for unsupervised clustering with BMU selection and decaying neighbourhood.
   ```bash
-  python Exp6/som/som.py
+  python Exp6/som.py
   ```
-* **`lvq/lvq.py`**: Learning Vector Quantization (LVQ) for supervised competitive classification with prototype weight updates.
+* **`Exp6/lvq.py`**: Learning Vector Quantization (LVQ) for supervised competitive classification with prototype weight updates.
   ```bash
-  python Exp6/lvq/lvq.py
+  python Exp6/lvq.py
   ```
 
 ---
 
 ### Exp7: Bidirectional Associative Memory (BAM) (`Python`)
-* **`bam/bam.py`**: BAM network storing bipolar pattern pairs ($W = \sum X_k^T Y_k$), bidirectional recall ($X \leftrightarrow Y$), and noise tolerance.
+* **`Exp7/bam.py`**: BAM network storing bipolar pattern pairs ($W = \sum X_k^T Y_k$), bidirectional recall ($X \leftrightarrow Y$), and noise tolerance.
   ```bash
-  python Exp7/bam/bam.py
+  python Exp7/bam.py
   ```
 
 ---
 
 ### Exp8: Fuzzy Sets & Relations (`Python`)
-* **`fuzzy/fuzzy.py`**: Standard and algebraic fuzzy set operations, Cartesian product, Max-Min and Max-Product composition, and De Morgan's laws.
+* **`Exp8/fuzzy_operations.py`**: Standard and algebraic fuzzy set operations, Cartesian product, Max-Min and Max-Product composition, and De Morgan's laws.
   ```bash
-  python Exp8/fuzzy/fuzzy.py
+  python Exp8/fuzzy_operations.py
   ```
 
 ---
 
 ### Exp9: Fuzzy Logic Controller (FLC) (`Python`)
-* **`controller/controller.py`**: Mamdani Fuzzy Inference System for Washing Machine wash time controller using Centroid Defuzzification (COG).
+* **`Exp9/fuzzy_controller.py`**: Mamdani Fuzzy Inference System for Washing Machine wash time controller using Centroid Defuzzification (COG).
   ```bash
-  python Exp9/controller/controller.py
+  python Exp9/fuzzy_controller.py
   ```
 
 ---
 
 ### Exp10: Adaptive Neuro-Fuzzy Inference System (ANFIS) (`Python`)
-* **`anfis/anfis.py`**: 5-Layer ANFIS architecture with first-order Takagi-Sugeno-Kang (TSK) fuzzy inference model and parameter tuning.
+* **`Exp10/anfis_model.py`**: 5-Layer ANFIS architecture with first-order Takagi-Sugeno-Kang (TSK) fuzzy inference model and parameter tuning.
   ```bash
-  python Exp10/anfis/anfis.py
+  python Exp10/anfis_model.py
   ```
