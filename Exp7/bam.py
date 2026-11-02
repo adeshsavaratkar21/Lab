@@ -1,11 +1,3 @@
-"""
-Experiment 7: Associative Memory Networks
-Part 3: Bidirectional Associative Memory (BAM) Network
-
-Topic: BAM Network for Pattern Association using 5x3 Bipolar Character Grids
-Pattern 'E' (15-dim bipolar vector)  --> Target: [-1,  1]
-Pattern 'F' (15-dim bipolar vector)  --> Target: [ 1,  1]
-"""
 
 import sys
 

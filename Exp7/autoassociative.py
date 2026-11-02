@@ -74,3 +74,4 @@ test_pattern(np.array([-1, -1, 1, 1]), "Case 3: One Mistake Entry (Index 1 flipp
 test_pattern(np.array([0, 0, 1, 1]), "Case 4A: Two Missing Entries (Indices 0, 1 = 0)")
 test_pattern(np.array([-1, 0, 0, 1]), "Case 4B: Two Missing Entries (Indices 1, 2 = 0)")
 test_pattern(np.array([-1, -1, -1, 1]), "Case 5: Two Mistaken Entries (Indices 1, 2 flipped to -1)")
+

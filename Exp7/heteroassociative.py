@@ -102,3 +102,4 @@ for p in range(P):
         target_expected=T[p],
         description=f"Testing with Training Pattern {p+1}"
     )
+
