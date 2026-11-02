@@ -25,6 +25,8 @@ Lab/
 │   ├── som.py
 │   └── lvq.py
 ├── Exp7/
+│   ├── autoassociative.py
+│   ├── heteroassociative.py
 │   └── bam.py
 ├── Exp8/
 │   └── fuzzy_operations.py
@@ -102,8 +104,18 @@ Lab/
 
 ---
 
-### Exp7: Bidirectional Associative Memory (BAM) (`Python`)
-* **`Exp7/bam.py`**: BAM network storing bipolar pattern pairs ($W = \sum X_k^T Y_k$), bidirectional recall ($X \leftrightarrow Y$), and noise tolerance.
+### Exp7: Associative Memory Networks (`Python`)
+* **`Exp7/autoassociative.py`** (or `auto.py`): Autoassociative memory network storing bipolar vector `s = [-1, 1, 1, 1]` via outer product weight matrix $W = s^T s$, with testing for exact recall, missing entries, and mistaken entries.
+  ```bash
+  python Exp7/autoassociative.py
+  # or: python Exp7/auto.py
+  ```
+* **`Exp7/heteroassociative.py`** (or `hetero.py` / `hetro.py`): Heteroassociative memory network storing 4 binary pattern pairs $(S \to T)$ with step-by-step outer product accumulation and binary step recall.
+  ```bash
+  python Exp7/heteroassociative.py
+  # or: python Exp7/hetero.py
+  ```
+* **`Exp7/bam.py`**: Bidirectional Associative Memory (BAM) network storing $5 \times 3$ character grids ('E' and 'F') with bipolar target associations and forward recall verification.
   ```bash
   python Exp7/bam.py
   ```
