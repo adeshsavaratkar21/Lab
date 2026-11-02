@@ -29,7 +29,9 @@ Lab/
 │   ├── heteroassociative.py
 │   └── bam.py
 ├── Exp8/
-│   └── fuzzy_operations.py
+│   ├── fuzzy_operations.py
+│   ├── cartesian_product.py
+│   └── composition.py
 ├── Exp9/
 │   └── fuzzy_controller.py
 └── Exp10/
@@ -123,9 +125,18 @@ Lab/
 ---
 
 ### Exp8: Fuzzy Sets & Relations (`Python`)
-* **`Exp8/fuzzy_operations.py`**: Standard and algebraic fuzzy set operations, Cartesian product, Max-Min and Max-Product composition, and De Morgan's laws.
+* **`Exp8/fuzzy_operations.py`** (or `fuzzy_operation.py` / `algebric.py`): Algebraic sum, algebraic product, bounded sum, and bounded difference on fuzzy sets.
   ```bash
   python Exp8/fuzzy_operations.py
+  # or: python Exp8/fuzzy_operation.py
+  ```
+* **`Exp8/cartesian_product.py`**: Fuzzy Cartesian Product relation $R = A \times B$ with $\mu_R(x, y) = \min\{\mu_A(x), \mu_B(y)\}$.
+  ```bash
+  python Exp8/cartesian_product.py
+  ```
+* **`Exp8/composition.py`**: Max-Min ($\mu_T = \max_y \min[\mu_R, \mu_S]$) and Max-Product ($\mu_T = \max_y [\mu_R \cdot \mu_S]$) composition of relations.
+  ```bash
+  python Exp8/composition.py
   ```
 
 ---
